@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adinkra & Kente Studio</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- SIDEBAR CONTROLS -->
+        <aside class="control-panel">
+            <header class="brand-header">
+                <div class="header-top-row">
+                    <h1>Adinkra Studio</h1>
+                    <button type="button" id="darkModeToggleBtn" class="icon-toggle-btn" title="Toggle Dark Mode">🌙</button>
+                </div>
+                <p class="subtitle">Geometric Symmetry & Textile Engine</p>
+            </header>
+
+            <div class="controls-scroll">
+                <!-- Motif Selection -->
+                <div class="control-group">
+                    <label for="symbolSelect">Adinkra Motif</label>
+                    <select id="symbolSelect"></select>
+                    <div class="symbol-card">
+                        <span class="meaning-label">Cultural Meaning</span>
+                        <p id="symbolMeaning">Patience and endurance</p>
+                    </div>
+                </div>
+
+                <!-- Symmetry Transformation -->
+                <div class="control-group">
+                    <label for="symmetrySelect">Symmetry Transformation</label>
+                    <select id="symmetrySelect">
+                        <option value="translation">1. Translation (Orthogonal Grid)</option>
+                        <option value="reflection">2. Reflection (Mirror Rows)</option>
+                        <option value="rotation">3. Rotation (Radial Rosette)</option>
+                        <option value="glide">4. Glide Reflection (Frieze Shift)</option>
+                        <option value="hexagonal">5. Hexagonal Tiling (Honeycomb)</option>
+                    </select>
+                </div>
+
+                <!-- Color Palette -->
+                <div class="control-group">
+                    <label>Textile Color Symbolism</label>
+                    <div class="palette-grid" id="paletteSelector">
+                        <button type="button" class="swatch active" data-bg="#F5F5F7" data-fg="#1D1D1F" data-meaning="Calico & Ink: Balance & Clarity">
+                            <span style="background:#F5F5F7"></span><span style="background:#1D1D1F"></span>
+                        </button>
+                        <button type="button" class="swatch" data-bg="#1D1D1F" data-fg="#F56300" data-meaning="Gold: Royalty, Wealth & High Status">
+                            <span style="background:#1D1D1F"></span><span style="background:#F56300"></span>
+                        </button>
+                        <button type="button" class="swatch" data-bg="#27553F" data-fg="#F5D061" data-meaning="Green: Growth, Vitality & Harvesting">
+                            <span style="background:#27553F"></span><span style="background:#F5D061"></span>
+                        </button>
+                        <button type="button" class="swatch" data-bg="#8A1C14" data-fg="#F5D061" data-meaning="Red: Political Passion & Sacrifice">
+                            <span style="background:#8A1C14"></span><span style="background:#F5D061"></span>
+                        </button>
+                        <button type="button" class="swatch" data-bg="#0043CE" data-fg="#F5F5F7" data-meaning="Blue: Peaceful Transit & Harmony">
+                            <span style="background:#0043CE"></span><span style="background:#F5F5F7"></span>
+                        </button>
+                    </div>
+                    <small id="colorMeaningHint" class="color-hint">Calico & Ink: Balance & Clarity</small>
+                </div>
+
+                <!-- Sliders -->
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="scaleSlider">Motif Scale</label>
+                        <span class="value-pill"><span id="scaleValue">1.0</span>x</span>
+                    </div>
+                    <input type="range" id="scaleSlider" min="0.4" max="2.2" step="0.1" value="1.0">
+                </div>
+
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="rotationSlider">Base Rotation</label>
+                        <span class="value-pill"><span id="rotationValue">0</span>°</span>
+                    </div>
+                    <input type="range" id="rotationSlider" min="0" max="360" step="15" value="0">
+                </div>
+
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="densitySlider">Grid Density</label>
+                        <span class="value-pill" id="densityValue">4</span>
+                    </div>
+                    <input type="range" id="densitySlider" min="3" max="8" step="1" value="4">
+                </div>
+
+                <!-- Matrix Shear -->
+                <div class="control-group shear-box">
+                    <label>Matrix Shear Parameters</label>
+                    <div class="slider-header">
+                        <label for="shearXSlider">Shear X</label>
+                        <span class="value-pill"><span id="shearXValue">0.0</span></span>
+                    </div>
+                    <input type="range" id="shearXSlider" min="-0.8" max="0.8" step="0.1" value="0.0">
+
+                    <div class="slider-header" style="margin-top:10px;">
+                        <label for="shearYSlider">Shear Y</label>
+                        <span class="value-pill"><span id="shearYValue">0.0</span></span>
+                    </div>
+                    <input type="range" id="shearYSlider" min="-0.8" max="0.8" step="0.1" value="0.0">
+                </div>
+
+                <!-- Seed Control -->
+                <div class="control-group">
+                    <div class="slider-header">
+                        <label for="seedInput">Design Seed</label>
+                        <button type="button" id="randomizeSeedBtn" class="text-btn">Randomize</button>
+                    </div>
+                    <input type="text" id="seedInput" value="AKAN-2026" class="text-input">
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-buttons">
+                <button id="generateBtn" class="primary-btn">Generate Pattern</button>
+                <div class="secondary-row">
+                    <button id="resetBtn" class="secondary-btn">Reset</button>
+                    <button id="downloadBtn" class="secondary-btn">Export SVG</button>
+                </div>
+                <div class="secondary-row">
+                    <button id="printA3Btn" class="secondary-btn">A3 Print View</button>
+                    <button id="downloadMockupPngBtn" class="secondary-btn">Mockup PNG</button>
+                </div>
+            </div>
+
+            <footer class="ai-declaration">
+                <small><em>AI Assistance Declared: Architecture reviewed by student.</em></small>
+            </footer>
+        </aside>
+
+        <!-- MAIN PREVIEW STAGE (Expanded Working Area) -->
+        <main class="preview-area">
+            <div class="preview-topbar">
+                <div class="view-tabs">
+                    <button type="button" class="tab-btn active" id="tabPattern">Canvas</button>
+                    <button type="button" class="tab-btn" id="tabMockup">Mockups (10)</button>
+                </div>
+
+                <!-- 10 Product Mockup Selector Pills -->
+                <div class="product-pills hidden" id="productSelector">
+                    <button type="button" class="pill-btn active" data-product="bag">Tote Bag</button>
+                    <button type="button" class="pill-btn" data-product="shirt">T-Shirt</button>
+                    <button type="button" class="pill-btn" data-product="wrap">Wrapping Paper</button>
+                    <button type="button" class="pill-btn" data-product="pillow">Pillow</button>
+                    <button type="button" class="pill-btn" data-product="mug">Mug</button>
+                    <button type="button" class="pill-btn" data-product="scroll">Scroll</button>
+                    <button type="button" class="pill-btn" data-product="journal">Journal</button>
+                    <button type="button" class="pill-btn" data-product="pin">Enamel Pin</button>
+                    <button type="button" class="pill-btn" data-product="phone">Phone Case</button>
+                    <button type="button" class="pill-btn" data-product="poster">Poster</button>
+                </div>
+
+                <span class="dimensions-tag" id="activeSymmetryLabel">Translation (Orthogonal Grid)</span>
+            </div>
+
+            <div class="canvas-stage">
+                <!-- 2D Vector Canvas -->
+                <svg id="canvas" viewBox="0 0 500 500" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <pattern id="subtleGrid" width="25" height="25" patternUnits="userSpaceOnUse">
+                            <path d="M 25 0 L 0 0 0 25" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect id="canvasBg" width="100%" height="100%" fill="#F5F5F7" />
+                    <rect width="100%" height="100%" fill="url(#subtleGrid)" />
+                    <g id="patternGroup"></g>
+                </svg>
+
+                <!-- Product Mockup Canvas with 10 Product Variations -->
+                <svg id="mockupCanvas" class="hidden" viewBox="0 0 600 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="studioBg" cx="50%" cy="45%" r="65%">
+                            <stop offset="0%" stop-color="#FBFBFD"/>
+                            <stop offset="100%" stop-color="#EAEAEA"/>
+                        </radialGradient>
+                        <filter id="productShadow" x="-15%" y="-15%" width="130%" height="130%">
+                            <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#000000" flood-opacity="0.14"/>
+                        </filter>
+                        <!-- Clip Paths -->
+                        <clipPath id="clipBag"><path d="M 170,210 L 430,210 L 445,510 Q 445,525 430,525 L 170,525 Q 155,525 155,510 Z"/></clipPath>
+                        <clipPath id="clipShirt"><path d="M 230,120 Q 300,150 370,120 L 485,170 L 445,255 L 395,230 L 395,510 L 205,510 L 205,230 L 155,255 L 115,170 Z"/></clipPath>
+                        <clipPath id="clipWrap"><rect x="120" y="100" width="360" height="400" rx="4"/></clipPath>
+                        <clipPath id="clipPillow"><rect x="150" y="150" width="300" height="300" rx="40"/></clipPath>
+                        <clipPath id="clipMug"><rect x="200" y="170" width="200" height="260" rx="10"/></clipPath>
+                        <clipPath id="clipScroll"><rect x="170" y="120" width="260" height="360" rx="6"/></clipPath>
+                        <clipPath id="clipJournal"><rect x="160" y="110" width="280" height="380" rx="8"/></clipPath>
+                        <clipPath id="clipPin"><circle cx="300" cy="300" r="110"/></clipPath>
+                        <clipPath id="clipPhone"><rect x="210" y="100" width="180" height="400" rx="30"/></clipPath>
+                        <clipPath id="clipPoster"><rect x="150" y="80" width="300" height="440" rx="4"/></clipPath>
+                    </defs>
+
+                    <rect width="600" height="600" fill="url(#studioBg)"/>
+
+                    <!-- 1. Tote Bag -->
+                    <g id="mockupBag" filter="url(#productShadow)">
+                        <path d="M 220,210 C 220,110 380,110 380,210" fill="none" stroke="#d1cdc7" stroke-width="14" stroke-linecap="round"/>
+                        <path d="M 170,210 L 430,210 L 445,510 Q 445,525 430,525 L 170,525 Q 155,525 155,510 Z" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipBag)">
+                            <rect id="bgBag" x="150" y="200" width="300" height="335" fill="#F5F5F7"/>
+                            <g id="targetBag" transform="translate(160, 215) scale(0.58, 0.62)"></g>
+                            <rect x="150" y="200" width="300" height="335" fill="rgba(0,0,0,0.06)"/>
+                        </g>
+                    </g>
+
+                    <!-- 2. T-Shirt -->
+                    <g id="mockupShirt" class="hidden" filter="url(#productShadow)">
+                        <path d="M 230,120 Q 300,150 370,120 L 485,170 L 445,255 L 395,230 L 395,510 L 205,510 L 205,230 L 155,255 L 115,170 Z" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipShirt)">
+                            <rect id="bgShirt" x="110" y="110" width="380" height="410" fill="#F5F5F7"/>
+                            <g id="targetShirt" transform="translate(140, 140) scale(0.68, 0.72)"></g>
+                            <rect x="110" y="110" width="380" height="410" fill="rgba(0,0,0,0.06)"/>
+                        </g>
+                    </g>
+
+                    <!-- 3. Wrapping Paper -->
+                    <g id="mockupWrap" class="hidden" filter="url(#productShadow)">
+                        <rect x="120" y="100" width="360" height="400" rx="4" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipWrap)">
+                            <rect id="bgWrap" x="120" y="100" width="360" height="400" fill="#F5F5F7"/>
+                            <g id="targetWrap" transform="translate(120, 100) scale(0.72, 0.78)"></g>
+                            <rect x="120" y="100" width="360" height="400" fill="rgba(0,0,0,0.05)"/>
+                        </g>
+                        <rect x="282" y="100" width="36" height="400" fill="#eab308" opacity="0.88"/>
+                        <rect x="120" y="278" width="360" height="32" fill="#eab308" opacity="0.88"/>
+                    </g>
+
+                    <!-- 4. Pillow -->
+                    <g id="mockupPillow" class="hidden" filter="url(#productShadow)">
+                        <rect x="150" y="150" width="300" height="300" rx="40" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipPillow)">
+                            <rect id="bgPillow" x="150" y="150" width="300" height="300" fill="#F5F5F7"/>
+                            <g id="targetPillow" transform="translate(160, 160) scale(0.55, 0.55)"></g>
+                            <rect x="150" y="150" width="300" height="300" fill="rgba(0,0,0,0.08)"/>
+                        </g>
+                    </g>
+
+                    <!-- 5. Mug -->
+                    <g id="mockupMug" class="hidden" filter="url(#productShadow)">
+                        <path d="M 370,220 C 420,220 420,380 370,380" fill="none" stroke="#d1cdc7" stroke-width="16" stroke-linecap="round"/>
+                        <rect x="200" y="170" width="200" height="260" rx="10" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipMug)">
+                            <rect id="bgMug" x="200" y="170" width="200" height="260" fill="#F5F5F7"/>
+                            <g id="targetMug" transform="translate(210, 190) scale(0.38, 0.48)"></g>
+                            <rect x="200" y="170" width="200" height="260" fill="rgba(0,0,0,0.08)"/>
+                        </g>
+                    </g>
+
+                    <!-- 6. Scroll -->
+                    <g id="mockupScroll" class="hidden" filter="url(#productShadow)">
+                        <rect x="170" y="120" width="260" height="360" rx="6" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipScroll)">
+                            <rect id="bgScroll" x="170" y="120" width="260" height="360" fill="#F5F5F7"/>
+                            <g id="targetScroll" transform="translate(180, 130) scale(0.48, 0.65)"></g>
+                            <rect x="170" y="120" width="260" height="360" fill="rgba(0,0,0,0.06)"/>
+                        </g>
+                        <rect x="160" y="110" width="280" height="20" rx="6" fill="#ca8a04"/>
+                        <rect x="160" y="470" width="280" height="20" rx="6" fill="#ca8a04"/>
+                    </g>
+
+                    <!-- 7. Journal -->
+                    <g id="mockupJournal" class="hidden" filter="url(#productShadow)">
+                        <rect x="160" y="110" width="280" height="380" rx="8" fill="#F5F5F7" stroke="#e0e0e5" stroke-width="2"/>
+                        <g clip-path="url(#clipJournal)">
+                            <rect id="bgJournal" x="160" y="110" width="280" height="380" fill="#F5F5F7"/>
+                            <g id="targetJournal" transform="translate(175, 120) scale(0.5, 0.7)"></g>
+                            <rect x="160" y="110" width="280" height="380" fill="rgba(0,0,0,0.06)"/>
+                        </g>
+                        <rect x="150" y="110" width="20" height="380" rx="4" fill="#1d1d1f"/>
+                    </g>
+
+                    <!-- 8. Pin -->
+                    <g id="mockupPin" class="hidden" filter="url(#productShadow)">
+                        <circle cx="300" cy="300" r="120" fill="#d4af37" stroke="#b89728" stroke-width="4"/>
+                        <g clip-path="url(#clipPin)">
+                            <rect id="bgPin" x="180" y="180" width="240" height="240" fill="#F5F5F7"/>
+                            <g id="targetPin" transform="translate(200, 200) scale(0.38, 0.38)"></g>
+                            <circle cx="300" cy="300" r="110" fill="rgba(255,255,255,0.15)"/>
+                        </g>
+                    </g>
+
+                    <!-- 9. Phone Case -->
+                    <g id="mockupPhone" class="hidden" filter="url(#productShadow)">
+                        <rect x="210" y="100" width="180" height="400" rx="30" fill="#1d1d1f" stroke="#3a3a3c" stroke-width="3"/>
+                        <g clip-path="url(#clipPhone)">
+                            <rect id="bgPhone" x="215" y="105" width="170" height="390" rx="26" fill="#F5F5F7"/>
+                            <g id="targetPhone" transform="translate(225, 120) scale(0.3, 0.7)"></g>
+                            <rect x="215" y="105" width="170" height="390" fill="rgba(0,0,0,0.06)"/>
+                        </g>
+                        <rect x="260" y="115" width="80" height="20" rx="10" fill="#000000"/>
+                    </g>
+
+                    <!-- 10. Poster -->
+                    <g id="mockupPoster" class="hidden" filter="url(#productShadow)">
+                        <rect x="135" y="65" width="330" height="470" rx="6" fill="#2c2c2e" stroke="#1d1d1f" stroke-width="6"/>
+                        <rect x="150" y="80" width="300" height="440" rx="2" fill="#F5F5F7"/>
+                        <g clip-path="url(#clipPoster)">
+                            <rect id="bgPoster" x="150" y="80" width="300" height="440" fill="#F5F5F7"/>
+                            <g id="targetPoster" transform="translate(160, 95) scale(0.58, 0.75)"></g>
+                            <rect x="150" y="80" width="300" height="440" fill="rgba(0,0,0,0.05)"/>
+                        </g>
+                    </g>
+
+                    <text id="mockupCaption" x="300" y="565" text-anchor="middle" fill="#86868b" font-family="-apple-system, sans-serif" font-size="12" font-weight="500">
+                        Adinkra Textile Collection • Tote Bag
+                    </text>
+                </svg>
+            </div>
+        </main>
+    </div>
+
+    <script src="symbols.js"></script>
+    <script src="matrix.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
