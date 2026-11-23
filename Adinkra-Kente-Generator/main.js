@@ -385,8 +385,23 @@ function exportMockupPNG() {
     };
     document.getElementById("mockupCaption").textContent = `${symName} Collection • ${labels[activeProduct] || activeProduct}`;
 
+    const exportSvg = mockupSvg.cloneNode(true);
+    exportSvg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+    const mockupGroups = ['Bag', 'Shirt', 'Wrap', 'Pillow', 'Mug', 'Scroll', 'Journal', 'Pin', 'Phone', 'Poster'];
+    mockupGroups.forEach(groupName => {
+        const group = exportSvg.querySelector(`#mockup${groupName}`);
+        if (group) {
+            group.setAttribute("display", groupName.toLowerCase() === activeProduct ? "inline" : "none");
+        }
+    });
+
     const serializer = new XMLSerializer();
-    let svgString = serializer.serializeToString(mockupSvg);
+    let svgString = serializer.serializeToString(exportSvg);
+
+    if (!svgString.match(/^<svg[^>]+xmlns=/)) {
+        svgString = svgString.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+    }
 
     const img = new Image();
     const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
